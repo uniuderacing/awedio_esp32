@@ -83,6 +83,7 @@ impl Esp32Backend {
             priority,
             inherit: false,
             pin_to_core,
+            ..Default::default()
         };
         new_config
             .set()
@@ -124,7 +125,7 @@ fn audio_task(backend: Esp32Backend, mut renderer: Renderer) {
         let mut paused = false;
         let mut finished = false;
         let mut have_data = true;
-        for i in 0..buf.len() {
+        for (i, item) in buf.iter_mut().enumerate() {
             let sample = match renderer
                 .next_sample()
                 .expect("renderer never returns an error")
@@ -151,7 +152,7 @@ fn audio_task(backend: Esp32Backend, mut renderer: Renderer) {
                 }
             };
 
-            buf[i] = sample;
+            *item = sample;
         }
         if have_data {
             if stopped {
